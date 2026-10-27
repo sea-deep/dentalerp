@@ -1,0 +1,125 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  # Deliberately unfiltered by base branch. With a `branches:` filter here, a
+  # stacked pull request (one targeting another feature branch rather than
+  # main) gets no checks at all — and a required status check that never runs
+  # cannot gate anything.
+  pull_request:
+  # So release.yml can run exactly these checks before publishing an image,
+  # rather than keeping a second copy of them that drifts.
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-type-check:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        working-directory: .
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: .
+        run: npx prisma generate
+
+      - name: Type check
+        working-directory: .
+        run: npx tsc --noEmit
+
+      - name: Lint
+        working-directory: .
+        run: npx eslint .
+
+      # The pre-commit hook formats staged files, so this only fires for commits
+      # made with the hook bypassed or absent. It is here because the cost of
+      # letting formatting drift is paid by whoever touches the file next: their
+      # diff arrives full of reformatting they did not write.
+      - name: Format check
+        working-directory: .
+        run: npx prettier --check .
+
+  unit-tests:
+    name: Unit & Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: lint-and-type-check
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        working-directory: .
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: .
+        run: npx prisma generate
+
+      - name: Run Vitest
+        working-directory: .
+        run: npx vitest run --reporter=verbose --coverage
+        env:
+          DATABASE_URL: 'mysql://test:test@localhost:3306/dental_test'
+          NEXTAUTH_SECRET: 'ci-test-secret-at-least-32-chars-long'
+          NEXTAUTH_URL: 'http://localhost:3000'
+          CRON_SECRET: 'ci-cron-secret'
+          ENCRYPTION_KEY: '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
+
+  build:
+    name: Production Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: lint-and-type-check
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        working-directory: .
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: .
+        run: npx prisma generate
+
+      - name: Build
+        working-directory: .
+        run: npm run build
+        env:
+          DATABASE_URL: 'mysql://test:test@localhost:3306/dental_test'
+          NEXTAUTH_SECRET: 'ci-test-secret-at-least-32-chars-long'
+          NEXTAUTH_URL: 'http://localhost:3000'

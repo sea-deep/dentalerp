@@ -1,0 +1,45 @@
+node_modules
+.next
+.env
+.env.*
+!.env.example
+.env copy
+.git
+.gitignore
+.github
+.claude
+.codex
+.agents
+.agent
+.cursor
+.gemini
+.impeccable
+.taste-skill
+.openai
+sites
+website
+uploads
+playwright-report
+test-results
+blob-report
+.cache
+.vscode
+.idea
+__tests__
+coverage
+*.log
+*.md
+!README.md
+!LICENSE
+!LICENSE.txt
+Dockerfile
+.dockerignore
+# Deployment configuration describes how to run the image; it has no business
+# inside it. Shipping the compose files would also put an example domain and a
+# set of placeholder credentials into every layer.
+docker-compose*.yml
+Caddyfile
+backups
+vitest.config.*
+playwright.config.*
+tsconfig.tsbuildinfo

@@ -1,0 +1,113 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# Testing
+/coverage
+/playwright-report
+/test-results
+/blob-report
+/.playwright
+
+# Next.js
+/.next/
+/out/
+
+# Production
+/build
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files. Deny by default and list the exceptions explicitly — a
+# template that gets committed by accident is how a real secret gets committed
+# by accident.
+.env
+.env.*
+.env copy
+!.env.example
+!.env.production.example
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# IDE
+.idea/
+.vscode/
+.history/
+*.swp
+*.swo
+
+# Prisma
+# migration_lock.toml records the datasource provider and MUST be committed —
+# `prisma migrate` errors without it. Do not add it back here.
+
+# Uploads
+/uploads/*
+!/uploads/.gitkeep
+
+# Logs
+# Anchored to the repo root on purpose. A bare `logs/` matches at ANY depth and
+# silently excluded app/api/sterilization/logs/ and the matching dashboard page
+# from the repository.
+/logs/
+*.log
+
+# Windows reserved names (can't be deleted normally)
+**/nul
+
+# Downloaded medicine dataset cache
+/.cache/
+
+# Local assistant configuration and design/research context
+.agents/
+.agent/
+.codex/
+.claude/
+.cursor/
+.gemini/
+.impeccable/
+.taste-skill/
+.openai/
+.aider*
+AGENTS.md
+CLAUDE.md
+CODEX.md
+GEMINI.md
+SKILL.md
+PRODUCT.md
+DESIGN.md
+
+# Private meeting material and generated demo captures
+/docs/CLIENT-MEETING*.md
+/docs/MEETING-*.md
+/docs/DEMO-CHANGELOG.md
+/docs/DENTSOFT-PARITY.md
+/docs/ERP-DEMO-RUNBOOK.md
+/docs/demo/
+
+# Independent website projects are published separately
+/sites/
+/website/
+
+# Local archives and credentials
+/backups/
+*.key
+*.p12
+*.pfx
+*.sql.gz
+
+# Revision references belong to the original local history, not a source snapshot
+/.git-blame-ignore-revs
